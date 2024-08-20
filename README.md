@@ -2,15 +2,15 @@
 
 Goals for the execrcise
 
-- `POST /execute` accepts multiline JSON as body and executes a supplied `main` method
-- Throw error if `main` is missing
-- Throw error if `main` is not a function
-- Docker image listening on 8080
-- Use `flask` and `nsjail`
-- Expose `os`, `pandas` and `numpy`
-- Deploy on Google Cloud Run
+✅ `POST /execute` accepts multiline JSON as body and executes a supplied `main` method
+✅ Throw error if `main` is missing
+✅ Throw error if `main` is not a function
+✅ Docker image listening on 8080
+✅ Use `flask` and `nsjail`
+✅ Expose `os`, `pandas` and `numpy`
+❌ Deploy on Google Cloud Run
 
-Building the image
+Building and testing the image
 
 ```
 # build it
@@ -27,9 +27,31 @@ $ nsjail --config sandbox.cfg -- /usr/local/bin/python -c "print('hello world')"
 Example cURL
 
 ```
-curl -X POST http://localhost:8080/run \
+curl -X POST http://localhost:8080/execute \
 -H "Content-Type: application/json" \
 -d '{
-  "script": "def main():\n\timport time\n\ttime.sleep(1)\n\tprint(\"Hello from the script\")\n\nif __name__ == \"__main__\":\n\tmain()"
+  "script": "def main():\n\tprint(f\"Hello from the script with a random 2x3 array {numpy.random.randint(1, 100, size=(2, 3))}\")"
 }'
+```
+
+Missing function cURL
+```
+curl -X POST http://localhost:8080/execute \
+-H "Content-Type: application/json" \
+-d '{
+  "script": "def not_main():\n\tprint(f\"Hello\")"
+}'
+
+{"error":"main function not found in the script"}
+```
+
+Malicious cURL
+```
+curl -X POST http://localhost:8080/execute \
+-H "Content-Type: application/json" \
+-d '{
+  "script": "def main():\n\twith open(\"/etc/passwd\", \"r\") as file:\n\t\tprint(file.read())"
+}'
+
+[Errno 2] No such file or directory: '/etc/passwd'
 ```
