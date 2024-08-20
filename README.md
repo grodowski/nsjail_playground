@@ -2,21 +2,22 @@
 
 Goals for the execrcise
 
-✅ `POST /execute` accepts multiline JSON as body and executes a supplied `main` method
-✅ Throw error if `main` is missing
-✅ Throw error if `main` is not a function
-✅ Docker image listening on 8080
-✅ Use `flask` and `nsjail`
-✅ Expose `os`, `pandas` and `numpy`
-❌ Deploy on Google Cloud Run
+- ✅ `POST /execute` accepts multiline JSON as body and executes a supplied `main` method
+- ✅ Throw error if `main` is missing
+- ✅ Throw error if `main` is not a function
+- ✅ Docker image listening on 8080
+- ✅ Use `flask` and `nsjail`
+- ✅ Expose `os`, `pandas` and `numpy`
+- TODO: Deploy on Google Cloud Run
+- TODO: Write an utility for easier testing (multiline JSON)
 
 Building and testing the image
 
 ```
 # build it
-docker build . -f Dockerfile --no-cache -t stacksyncjail
+docker build . -f Dockerfile -t stacksyncjail
 
-# run it
+# run the server
 docker run --rm -it -p8080:8080 stacksyncjail
 
 # or test with
@@ -24,7 +25,7 @@ docker run --rm -it -p8080:8080 stacksyncjail bash
 $ nsjail --config sandbox.cfg -- /usr/local/bin/python -c "print('hello world')"
 ```
 
-Example cURL
+Example cURLs
 
 ```
 curl -X POST http://localhost:8080/execute \
