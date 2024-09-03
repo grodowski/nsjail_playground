@@ -1,3 +1,14 @@
+Notes
+
+```
+# use the right architecture for GCR
+docker build . --platform=linux/amd64  -f Dockerfile -t stacksyncjail
+
+# then push again
+
+https://stacksyncjail-738299191355.europe-west1.run.app
+```
+
 ## Stacksync eval API
 
 Goals for the execrcise
@@ -28,7 +39,7 @@ $ nsjail --config sandbox.cfg -- /usr/local/bin/python -c "print('hello world')"
 Example cURLs
 
 ```
-curl -X POST http://localhost:8080/execute \
+curl -X POST https://stacksyncjail-738299191355.europe-west1.run.app:8080/execute \
 -H "Content-Type: application/json" \
 -d '{
   "script": "def main():\n\tprint(f\"Hello from the script with a random 2x3 array {numpy.random.randint(1, 100, size=(2, 3))}\")"
