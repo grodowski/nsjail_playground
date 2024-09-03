@@ -19,7 +19,7 @@ Goals for the execrcise
 - ✅ Docker image listening on 8080
 - ✅ Use `flask` and `nsjail`
 - ✅ Expose `os`, `pandas` and `numpy`
-- TODO: Deploy on Google Cloud Run
+- ✅ Deploy on Google Cloud Run
 - TODO: Write an utility for easier testing (multiline JSON)
 
 Building and testing the image
