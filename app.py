@@ -17,8 +17,16 @@ def generate_random_letter_string(length=12):
     return letter_string[:length]
 
 
-@app.route('/execute', methods=['POST'])
+
+@app.route('/execute', methods=['POST', 'OPTIONS'])
 def run_nsjail():
+    if request.method == 'OPTIONS':
+        response = app.make_default_options_response()
+        response.headers['Access-Control-Allow-Methods'] = 'POST'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        return response
+
     data = request.get_json()
     python_script = data.get("script", "")
 
@@ -42,18 +50,22 @@ def run_nsjail():
 
     try:
         result = subprocess.run(nsjail_command, check=True, capture_output=True, text=True)
-        return jsonify({"stdout": result.stdout})
+        response = jsonify({"stdout": result.stdout})
+        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        return response
     except subprocess.CalledProcessError as e:
         if "cannot import name 'main'" in e.stderr:
             return jsonify({"error": "main function not found in the script"}), 400
         if "object is not callable" in e.stderr:
             return jsonify({"error": "main is not a function"}), 400
 
-        return jsonify({
+        error_response = jsonify({
             "error": str(e),
             "stdout": e.stdout,
             "stderr": e.stderr,
-        }), 400
+        })
+        error_response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        return error_response, 400
     finally:
         if os.path.exists(script_path):
             os.remove(script_path)
